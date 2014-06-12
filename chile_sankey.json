@@ -23,7 +23,7 @@
 {"node":20,"name":"Gas"},
 {"node":21,"name":"Liquid"},
 {"node":22,"name":"Thermal generation"},
-{"node":23,"name":"H2 conversion"},
+{"node":23,"name":"Electricity Grid"},
 {"node":24,"name":"Losses"},
 {"node":25,"name":"Over generation/exports"},
 {"node":26,"name":"Industry"},
@@ -31,9 +31,7 @@
 {"node":28,"name":"Agriculture"},
 {"node":29,"name":"Rail transport"},
 {"node":30,"name":"Road transport"},
-{"node":31,"name":"Internation aviation"},
-{"node":32,"name":"National navigation"},
-{"node":33,"name":"Domestic aviation"}
+{"node":31,"name":"Internation aviation"}
 ],
 "links":[
 {"source":0,"target":22,"value":1},
