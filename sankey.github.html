@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>SANKEY Experiment</title>
@@ -17,6 +18,7 @@
 .node text {
   pointer-events: none;
   text-shadow: 0 1px 0 #fff;
+  font: 10px sans-serif;
 }
 
 .link {
@@ -29,31 +31,49 @@
   stroke-opacity: .5;
 }
 
+.row{
+	font-family:"Avant Garde";
+    background-color:white;
+    color:black;
+	text-align: left;
+}
+
+body {padding-top: 10px;
+	  padding-bottom: 20px;
+  }
+
 </style>
 
 <div class="container">			
 	<div class="col-xs-12 text-center" >
-		<div class="jumbotron">
+		<div class="row" style="margin:10px">
         	<h1>Sankey Example for Chile</h1>
         	<p>Responsive diagram</p>
         </div>
 	</div>
 </div>
-<div class="container">			
-	<div class="col-xs-12 text-center" >
+</br>
+<div class="container">	
+	<div class="col-xs-12">
+		<div id="chart"></div>
+		<p></br>
+		<p> Sankey diagrams visualize the magnitude of flow between nodes in a network. This intricate diagram shows a 				possible scenario: energy supplies are on the left, and demands are on the right. Intermediate nodes group 				related forms of production and show how energy is converted and transmitted before it is consumed (or 				lost!). The thickness of each link encodes the amount of flow from source to target. </p>
+
+		<p> This example is built with D3’s Sankey plugin. The plugin takes as input the nodes and weighted links, 				computing positions via iterative relaxation. After fixing the horizontal position of each node, the 			  algorithm starts from the sources on the left, positioning downstream nodes so as to minimize link 			  distance. A reverse pass is then made from right-to-left, and then the entire process is repeated several 			 times. Overlapping nodes are shifted to avoid collision. </p>
+
+		<p> The d3.sankey API is similar to D3’s force-directed graph layout, which is another type of network 				visualization. The fully automatic layout is convenient for rapid visualization—positioning nodes manually 				is tedious! However, the algorithm is not perfect; links are drawn with partial transparency to 			 highlight crossings. To improve readability and further disambiguate links, this example also lets you 			 reposition nodes interactively. </p>	
+</div>
+</div>
 
 <body>
-
-<p id="chart">
-
 
 <script>
 	
 var units = "Widgets";
 
 var margin = {top: 10, right: 10, bottom: 10, left: 10},
-    width = 700 - margin.left - margin.right,
-    height = 300 - margin.top - margin.bottom;
+    width = 900 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
 
 var formatNumber = d3.format(",.0f"),    // zero decimal places
     format = function(d) { return formatNumber(d) + " " + units; },
@@ -70,14 +90,14 @@ var svg = d3.select("#chart").append("svg")
 // Set the sankey diagram properties
 var sankey = d3.sankey()
     .nodeWidth(36)
-    .nodePadding(40)
+    .nodePadding(10)
     .size([width, height]);
 
 var path = sankey.link();
 
 // load the data
-d3.json("sankey-formatted.json", function(error, graph) {
-
+//d3.json("sankey-formatted.json", function(error, graph) {
+d3.json("chile_sankey.json", function(error, graph) {
   sankey
       .nodes(graph.nodes)
       .links(graph.links)
@@ -149,6 +169,4 @@ d3.json("sankey-formatted.json", function(error, graph) {
 </script>
 
 </body>
-</div>
-</div>
 </html>
