@@ -29,19 +29,27 @@
 			
 		}
 		.year.label {
-  font: 500 196px "Helvetica Neue";
+  font: 400 30px "Helvetica Neue";
   fill: #ddd;
 }
+
+.year.label2 {
+  font: 400 13px "Helvetica Neue";
+  fill: #ddd;
+}
+
 		div.tooltip {
+		background: rgba(153,204,255,.5);
 	position: absolute;
 	text-align: center;
-	width: 60px;
+	width: 160px;
 	height: 28px;
 	padding: 2px;
-	font: 12px sans-serif;
+	font: 15px "Helvetica Neue";
 	border: 0px;
 	border-radius: 8px;
 	pointer-events: none;
+	fill: black;
 }
 .node rect {
   cursor: move;
@@ -82,7 +90,7 @@ body {padding-top: 10px;
 	<div class="col-xs-12 text-center" >
 		<div class="row" style="margin:10px">
         	<h1>Sankey Example for Chile</h1>
-        	<p>Responsive diagram</p>
+        	<p>Responsive diagram with moveable nodes</p>
         </div>
 	</div>
 </div>
@@ -116,8 +124,8 @@ body {padding-top: 10px;
 <div class="container">			
 	<div class="col-xs-12 text-center" >
 		<div class="row" style="margin:10px">
-        	<h1>Scatter Plot - GDP growth compared to GDP</h1>
-        	<p>1965-2010</p>
+        	<h1>1965-2010 - GDP growth compared to GDP</h1>
+        	<p> Click years to move through time (Blue circle represents Chile -- hover over for country names) </p>
         </div>
 	</div>
 </div>
@@ -177,14 +185,14 @@ body {padding-top: 10px;
 			value="2005"
 			onclick="do_year(2005);" />
 			
-			<input name="update2010"
-			type="button"
-			class="button"
-			value="2010"
-			onclick="do_year(2010);" />
+			
 		</div>
 	<div class="col-md-12">
 		<div id = "area2"></div>
+		<p></br>
+		<p> This scatterplot measures current GDP (in trillions of US dollars) compared to GDP growth (as measured by annual percent growth). I have subsetted the countries to latin American countries with full sets of data
+		between the years 1965 and 2005, and with a total GDP at any point of less than 200 trillions current US dollars. The blue circle represents Chile while the grey circles represent all other represente countries. The
+		radius of the circle indicates relative population. </p>
 	</div>
 </div>
 	
@@ -193,7 +201,11 @@ body {padding-top: 10px;
 		//var dataset = [];
 		var w = 800;
 		var h = 500;
-		var padding = 30;
+		var padding = 35;
+		
+		var div = d3.select("body").append("div")
+		.attr("class","tooltip")
+		.style("opacity",0);
 		
 		var svg2 = d3.select("#area2")
 					.append("svg")
@@ -204,12 +216,13 @@ body {padding-top: 10px;
 		
 					
 		
-		d3.csv("latin_popGDP_after_R.csv", function(data) {
+		d3.csv("latin_popGDP_after_R_2.csv", function(data) {
 			window.orig_data = data;
 			var dataset = data.filter(function(d) { return d.year == "1965"; });
 			do_viz(dataset);
 		});
 
+	
 	
 	function do_year(year) {
 		// <div class="btn" onclick="do_year(2009);"></div>
@@ -225,7 +238,7 @@ body {padding-top: 10px;
 
 		var yScale = d3.scale.linear()
 								 //.domain([0, d3.max(dataset, function(d) { return d.sgp; })])
-								 .domain([0,1276650000000])
+								 .domain([0,200])
 								 .range([h-padding, padding]);
 		
 		
@@ -234,15 +247,33 @@ body {padding-top: 10px;
 		var xAxis = d3.svg.axis()
 						.scale(xScale)
 						.orient("bottom");
+		
+		//formatValue = d3.format(".2s");
+		
 		var yAxis = d3.svg.axis()
 						.scale(yScale)
+						//.tickFormat(function(d) { return formatValue(d)})
 						.orient("left");
 		var r_scale = d3.scale.linear()
 						//.domain(d3.extent(dataset, function(d) {return d.n_sgp;}))
-						.domain([82144,198656019])
+						.domain([82144,43184026])
 						.range([10,30]);
 						
-		
+		var label = svg2.append("text")
+    		.attr("class", "year label")
+    		.attr("text-anchor", "end")
+    		.attr("y", height - 24)
+    		.attr("x", width-padding-50)
+    		.text("GDP Growth");
+    	
+    	svg2.append("text")
+    		.attr("class", "year label")
+    		.attr("text-anchor", "end")
+    		.attr("x",-35)
+    		.attr("y", 45)
+    		.attr("dy", ".75em")
+    		.attr("transform", "rotate(-90)")
+    		.text("GDP (Current $US)");
 							
 		var circles = svg2.selectAll("circle")
 			.data(dataset, function(d) { return d.year + d.Country;})
@@ -284,6 +315,20 @@ body {padding-top: 10px;
 			.attr("opacity", "0.7");
 			//.filter(function(d) { return d == null; }).remove();
 		
+		circles.on("mouseover",function(d){
+									div.transition()
+									.duration(200)
+									.style("opacity",.9);
+									//.text("MSGP: " + Math.round(d.individ_msgp) + " , Tripod: " + d.sevencs_nce_median)
+									div.html(d.Country)
+									.style("left",(d3.event.pageX)-5+"px")
+									.style("top",(d3.event.pageY)-25+"px");
+								})
+								.on("mouseout",function(d){
+									div.transition()
+									.duration(500)
+									.style("opacity",0);
+								});
 
 
 		circles.exit().remove();
