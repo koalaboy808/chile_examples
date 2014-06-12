@@ -77,6 +77,186 @@ body {padding-top: 10px;
 <body>
 
 <script>
+
+<div class="col-md-12">
+		<div id="option">
+			<input name="update1965"
+			type="button"
+			class="button"
+			class="btn btn-large"
+			value="1965"
+			data-toggle="tooltip"
+			title="update 1965"
+			data-placement="bottom"
+			onclick="do_year(1965);" />
+
+			<input name="update1970"
+			type="button"
+			class="button"
+			value="1970"
+			onclick="do_year(1970);" />
+
+			<input name="update1975"
+			type="button"
+			class="button"
+			value="1975"
+			onclick="do_year(1975);" />
+
+			<input name="update1980"
+			type="button"
+			class="button"
+			value="1980"
+			onclick="do_year(1980);" />
+
+			<input name="update1990"
+			type="button"
+			class="button"
+			value="1990"
+			onclick="do_year(1990);" />
+			
+			<input name="update1995"
+			type="button"
+			class="button"
+			value="1995"
+			onclick="do_year(1995);" />
+			
+			<input name="update2000"
+			type="button"
+			class="button"
+			value="2000"
+			onclick="do_year(2000);" />
+			
+			<input name="update2005"
+			type="button"
+			class="button"
+			value="2005"
+			onclick="do_year(2005);" />
+			
+			<input name="update2010"
+			type="button"
+			class="button"
+			value="2010"
+			onclick="do_year(2010);" />
+		</div>
+	<div class="col-md-12">
+		<div id = "area2"></div>
+	</div>
+		<script type="text/javascript">
+		
+		//var dataset = [];
+		var w = 800;
+		var h = 500;
+		var padding = 30;
+		
+		var svg = d3.select("#area2")
+					.append("svg")
+					.attr("width",w)
+					.attr("height",h);
+		
+		var color = d3.scale.category20c();
+		
+		var label = svg.append("text")
+    .attr("class", "year label")
+    .attr("text-anchor", "end")
+    .attr("y", h - 60)
+    .attr("x", w)
+    .text(1965);			
+		
+		d3.csv("latin_popGDP_after_R.csv", function(data) {
+			window.orig_data = data;
+			var dataset = data.filter(function(d) { return d.year == "1965"; });
+			do_viz(dataset);
+		});
+
+	
+	function do_year(year) {
+		// <div class="btn" onclick="do_year(2009);"></div>
+		var dataset = window.orig_data.filter(function(d) { return d.year == year; });
+		do_viz(dataset);
+		
+	}
+	function do_viz(dataset) {
+		
+		var xScale = d3.scale.linear()
+								 .domain([-15.47878886, 20])
+								 .range([padding, w-padding]);
+
+		var yScale = d3.scale.linear()
+								 //.domain([0, d3.max(dataset, function(d) { return d.sgp; })])
+								 .domain([0,1276650000000])
+								 .range([h-padding, padding]);
+		
+		
+								 
+		//Create x and y axis
+		var xAxis = d3.svg.axis()
+						.scale(xScale)
+						.orient("bottom");
+		var yAxis = d3.svg.axis()
+						.scale(yScale)
+						.orient("left");
+		var r_scale = d3.scale.linear()
+						//.domain(d3.extent(dataset, function(d) {return d.n_sgp;}))
+						.domain([82144,198656019])
+						.range([10,30]);
+						
+		
+							
+		var circles = svg.selectAll("circle")
+			.data(dataset, function(d) { return d.year + d.Country;})
+			
+		circles
+			.enter()
+			.append("circle")
+			.attr("cx", function(d) {
+			   		return xScale(d.GDP_growth);
+			   })
+			.attr("cy", function(d) {
+			   		return yScale(d.GDP);
+			   })
+			//.attr("r",5)
+			.attr("r", function(d) {
+			return r_scale(d.Population);
+			})
+			//.style("fill", function(d) {return(color(d.Country) )})
+			.style("fill", function(d) {
+				if (d.TF == 1) { 
+    			return "blue";
+  			}
+  			else if(d.TF==0){
+    			return 'grey';
+  			}
+  			})
+			//.attr('opacity', function(d) {
+  			/*if (d.TF == 0) { 
+    			return "1.0";
+  			}
+  			else if(d.TF==1){
+    			return '.5';
+  			}
+  			});*/
+			
+			//.attr("fill", "rgba(0, 0, 0, 0.5)")
+			.attr("stroke-width", .5)
+			.attr("stroke", "black")
+			.attr("opacity", "0.7");
+			//.filter(function(d) { return d == null; }).remove();
+		
+
+
+		circles.exit().remove();
+		//Call X axis
+			svg.append("g")
+				.attr("class", "axis")
+				.attr("transform","translate(0,"+ (h-padding) +")")
+				.call(xAxis);
+		//Call Y axis
+			svg.append("g")
+				.attr("class","axis")
+				.attr("transform","translate("+ padding +",0)")
+				.call(yAxis);
+				
+		}	
 	
 var units = "Widgets";
 
